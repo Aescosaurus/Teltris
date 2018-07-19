@@ -9,11 +9,7 @@ class Arena
 private:
 	typedef unsigned int uint;
 public:
-	void Draw( Graphics& gfx )
-	{
-
-	}
-	std::vector<uint> CreateMatrix( int w,int h )
+	std::vector<uint> CreateMatrix( int w,int h ) const
 	{
 		std::vector<uint> temp;
 		temp.reserve( w * h );
@@ -40,7 +36,11 @@ public:
 			}
 		}
 	}
-	bool Collide( Tetreon player )
+	const std::vector<uint>& GetMat() const
+	{
+		return( data );
+	}
+	bool Collide( const Tetreon& player ) const
 	{
 		const auto& mat = player.GetMat();
 		const auto& pos = player.GetPos() / Tetreon::size;
@@ -52,11 +52,11 @@ public:
 				const auto dataPos = ( y + pos.y ) *
 					width + x + pos.x;
 
-				if( ( mat[y * Tetreon::dim + x] != 0 &&
+				if( mat[y * Tetreon::dim + x] != 0 &&
 					// dataPos == int( data.size() ) - 1 ) ||
-					y + pos.y >= height ) ||
+					( y + pos.y >= height ||
 					( dataPos < int( data.size() ) &&
-					data[dataPos] != 0 ) )
+					data[dataPos] != 0 ) ) )
 				{
 					return( true );
 				}
@@ -64,8 +64,10 @@ public:
 		}
 		return( false );
 	}
-private:
+public:
 	static constexpr int width = 12;
 	static constexpr int height = 20;
+	static constexpr Vei2 dim = { width,height };
+private:
 	std::vector<uint> data = CreateMatrix( width,height );
 };
