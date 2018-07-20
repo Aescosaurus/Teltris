@@ -24,11 +24,11 @@ public:
 		const auto& mat = piece.GetMat();
 		const auto& pos = piece.GetPos() / Tetreon::size;
 
-		for( int y = 0; y < Tetreon::dim; ++y )
+		for( int y = 0; y < piece.GetDim(); ++y )
 		{
-			for( int x = 0; x < Tetreon::dim; ++x )
+			for( int x = 0; x < piece.GetDim(); ++x )
 			{
-				if( mat[y * Tetreon::dim + x] != 0 )
+				if( mat[y * piece.GetDim() + x] != 0 )
 				{
 					data[( y + pos.y ) * width +
 						x + pos.x] = 1;
@@ -45,19 +45,25 @@ public:
 		const auto& mat = player.GetMat();
 		const auto& pos = player.GetPos() / Tetreon::size;
 
-		for( int y = 0; y < Tetreon::dim; ++y )
+		for( int y = 0; y < player.GetDim(); ++y )
 		{
-			for( int x = 0; x < Tetreon::dim; ++x )
+			for( int x = 0; x < player.GetDim(); ++x )
 			{
 				const auto dataPos = ( y + pos.y ) *
-					width + x + pos.x;
+					width + ( x + pos.x );
+				const auto amount = y * player.GetDim() + x;
 
-				if( mat[y * Tetreon::dim + x] != 0 &&
-					// dataPos == int( data.size() ) - 1 ) ||
-					( y + pos.y >= height ||
+				// Man this should be a little cleaner huh bud?
+				if( amount > 0 &&
+					amount < int( mat.size() ) &&
+					mat[amount] != 0 &&
+					( ( y + pos.y >= height ||
 					( dataPos < int( data.size() ) &&
-					data[dataPos] != 0 ) ) )
+					data[dataPos] != 0 ) ) ||
+					( x + pos.x >= width ||
+					x + pos.x < 0 ) ) )
 				{
+					auto b = mat[y * player.GetDim() + x];
 					return( true );
 				}
 			}
@@ -65,7 +71,7 @@ public:
 		return( false );
 	}
 public:
-	static constexpr int width = 12;
+	static constexpr int width = 10;
 	static constexpr int height = 20;
 	static constexpr Vei2 dim = { width,height };
 private:
