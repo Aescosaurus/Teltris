@@ -9,16 +9,6 @@ class Arena
 private:
 	typedef unsigned int uint;
 public:
-	std::vector<uint> CreateMatrix( int w,int h ) const
-	{
-		std::vector<uint> temp;
-		temp.reserve( w * h );
-		for( int i = 0; i < w * h; ++i )
-		{
-			temp.emplace_back( 0 );
-		}
-		return( temp );
-	}
 	void Merge( const Tetreon& piece )
 	{
 		const auto& mat = piece.GetMat();
@@ -28,13 +18,77 @@ public:
 		{
 			for( int x = 0; x < piece.GetDim(); ++x )
 			{
-				if( mat[y * piece.GetDim() + x] != 0 )
+				const uint info = mat[y * piece.GetDim() + x];
+				if( info != 0 )
 				{
 					data[( y + pos.y ) * width +
-						x + pos.x] = 1;
+						x + pos.x] = info;
 				}
 			}
 		}
+	}
+	void Clear()
+	{
+		data = CreateMatrix( width,height );
+	}
+	void Sweep()
+	{
+		for( int y = height - 1; y > 0; --y )
+		{
+			bool willReplace = true;
+			for( int x = 0; x < width; ++x )
+			{
+				if( data[y * width + x] == 0 )
+				{
+					willReplace = false;
+					continue;
+				}
+			}
+
+			if( willReplace )
+			{
+				ShiftDown( y );
+			}
+		}
+	}
+	void ShiftDown( int whichLine )
+	{
+		// for( int i = 0; i < width * height; ++i )
+		// {
+		// 	const auto spot = i - width;
+		// 	if( spot < 0 ) data[i] = 0;
+		// 	else data[i] = data[spot];
+		// }
+
+		// for( int y = 0; y < height; ++y )
+		// {
+		// 	for( int x = 0; x < width; ++x )
+		// 	{
+		// 		const auto place = y * width + x;
+		// 		const auto spot = ( y - 1 ) * width + x;
+		// 
+		// 		if( spot >= 0 ) data[place] = data[spot];
+		// 		else data[place] = 0;
+		// 	}
+		// }
+
+		std::vector<uint> temp;
+		for( int i = 0; i < int( data.size() ); ++i )
+		{
+			if( i > ( height - whichLine ) * width + 0 )
+			{
+				temp.emplace_back( data[i] );
+			}
+			else if( i - width < 0 )
+			{
+				temp.emplace_back( 0 );
+			}
+			else
+			{
+				temp.emplace_back( data[i - width] );
+			}
+		}
+		data = temp;
 	}
 	const std::vector<uint>& GetMat() const
 	{
@@ -69,6 +123,17 @@ public:
 			}
 		}
 		return( false );
+	}
+private:
+	std::vector<uint> CreateMatrix( int w,int h ) const
+	{
+		std::vector<uint> temp;
+		temp.reserve( w * h );
+		for( int i = 0; i < w * h; ++i )
+		{
+			temp.emplace_back( 0 );
+		}
+		return( temp );
 	}
 public:
 	static constexpr int width = 10;

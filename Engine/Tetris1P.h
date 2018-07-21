@@ -27,6 +27,15 @@ public:
 	}
 	void Update( const float dt,const Keyboard& kbd )
 	{
+		if( kbd.KeyIsPressed( VK_DOWN ) )
+		{
+			downTimer.Update( dt );
+		}
+		else
+		{
+			downTimer.Reset();
+		}
+		// 
 		if( kbd.KeyIsPressed( VK_LEFT ) && !keys[VK_LEFT] )
 		{
 			keys[VK_LEFT] = true;
@@ -41,8 +50,10 @@ public:
 			// CheckForCollision( { -1,0 },false );
 			MovePlayer( 1 );
 		}
-		else if( kbd.KeyIsPressed( VK_DOWN ) && !keys[VK_DOWN] )
+		else if( kbd.KeyIsPressed( VK_DOWN ) &&
+			( !keys[VK_DOWN] || downTimer.IsDone() ) )
 		{
+			downTimer.Reset();
 			Drop();
 			keys[VK_DOWN] = true;
 		}
@@ -90,10 +101,11 @@ public:
 					spot >= 0 &&
 					mat[spot] != 0 )
 				{
+					// TODO: Replace with images someday.
 					gfx.DrawRect( size * x + offset.x,
 						size * y + offset.y,
 						size,size,
-						Colors::Red );
+						Tetreon::tetCols[mat[spot]] );
 				}
 			}
 		}
@@ -109,6 +121,7 @@ public:
 			piece.GetPos().y -= size;
 			arena.Merge( piece );
 			ResetPlayer();
+			arena.Sweep();
 		}
 	}
 	void MovePlayer( int amount )
@@ -157,6 +170,14 @@ public:
 
 		piece.GetPos().x = Arena::width / 2 * size;
 		piece.GetPos().y = 0;
+
+		dropTimer.Reset();
+
+		if( arena.Collide( piece ) )
+		{
+			arena.Clear();
+			ResetPlayer();
+		}
 	}
 	bool CheckForCollision( const Vei2& offset,bool merge )
 	{
@@ -183,4 +204,5 @@ private:
 	static constexpr int size = Tetreon::size;
 	Arena arena;
 	std::map<int,bool> keys;
+	Timer downTimer = { 0.06f };
 };

@@ -148,49 +148,49 @@ public:
 	static Tetreon O( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			1,1,0,
-			1,1,0,
+			2,2,0,
+			2,2,0,
 			0,0,0
 			},pos ) );
 	}
 	static Tetreon L( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			0,1,0,
-			0,1,0,
-			0,1,1
+			0,3,0,
+			0,3,0,
+			0,3,3
 			},pos ) );
 	}
 	static Tetreon J( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			0,1,0,
-			0,1,0,
-			1,1,0
+			0,4,0,
+			0,4,0,
+			4,4,0
 			},pos ) );
 	}
 	static Tetreon I( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			0,1,0,0,
-			0,1,0,0,
-			0,1,0,0,
-			0,1,0,0
+			0,5,0,0,
+			0,5,0,0,
+			0,5,0,0,
+			0,5,0,0
 			},pos ) );
 	}
 	static Tetreon S( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			0,1,1,
-			1,1,0,
+			0,6,6,
+			6,6,0,
 			0,0,0
 			},pos ) );
 	}
 	static Tetreon Z( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			1,1,0,
-			0,1,1,
+			7,7,0,
+			0,7,7,
 			0,0,0
 			},pos ) );
 	}
@@ -202,6 +202,17 @@ public:
 	static constexpr int dimS = 3;
 	static constexpr int dimL = 4;
 	static constexpr int size = 20;
+	static constexpr Color tetCols[] =
+	{
+		Colors::MakeRGB( 255u,0u,255u ), // pls no
+		Colors::MakeRGB( 221u,74u,192u ), // Purple,
+		Colors::MakeRGB( 255u,182u,24u ), // Yellow,
+		Colors::MakeRGB( 33u,89u,222u ), // Blue,
+		Colors::MakeRGB( 252u,148u,46u ), // Orange,
+		Colors::MakeRGB( 9u,174u,247u ), // Light Blue,
+		Colors::MakeRGB( 99u,199u,16u ), // Green,
+		Colors::MakeRGB( 247u,32u,57u ) // Salmon.
+	};
 private:
 	std::vector<uint> matrix;
 	/*const */int dim;
