@@ -16,8 +16,8 @@ public:
 	{
 		assert( data.size() == 3 * 3 ||
 			data.size() == 4 * 4 );
-		matrix.reserve( 9 );
-		for( int i = 0; i < 9; ++i )
+		matrix.reserve( dim * dim );
+		for( int i = 0; i < dim * dim; ++i )
 		{
 			matrix.emplace_back( data[i] );
 		}

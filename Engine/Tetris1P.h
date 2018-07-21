@@ -22,6 +22,8 @@ public:
 		keys.insert( { VK_RIGHT,false } );
 		keys.insert( { VK_DOWN,false } );
 		keys.insert( { VK_UP,false } );
+
+		ResetPlayer();
 	}
 	void Update( const float dt,const Keyboard& kbd )
 	{
@@ -138,8 +140,7 @@ public:
 	}
 	void ResetPlayer()
 	{
-		// const int rnd = Random::RangeI( 0,6 );
-		const int rnd = 4;
+		const int rnd = Random::RangeI( 0,6 );
 		switch( rnd )
 		{
 		case 0: piece = Tetreon::T(); break;
@@ -176,7 +177,7 @@ public:
 		}
 	}
 private:
-	Graphics & gfx;
+	Graphics& gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
 	Timer dropTimer = { 1.0f };
 	static constexpr int size = Tetreon::size;
