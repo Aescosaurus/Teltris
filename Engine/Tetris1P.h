@@ -55,6 +55,7 @@ public:
 		{
 			downTimer.Reset();
 			Drop();
+			dropTimer.Reset();
 			keys[VK_DOWN] = true;
 		}
 		else if( kbd.KeyIsPressed( VK_UP ) && !keys[VK_UP] )
@@ -76,15 +77,17 @@ public:
 	}
 	void Draw( Graphics& gfx ) const
 	{
+		const Vei2 start = Vei2( 150,50 );
 		DrawMatrix( arena.GetMat(),
-			Vei2( 0,0 ),Arena::dim );
-		DrawPiece( piece );
+			start,Arena::dim );
+		DrawPiece( piece,start );
 		// DrawMatrix( piece.GetMat(),piece.GetPos() );
 	}
-	void DrawPiece( const Tetreon& piece ) const
+	void DrawPiece( const Tetreon& piece,
+		const Vei2& pos ) const
 	{
 		const auto mat = piece.GetMat();
-		const auto offset = piece.GetPos();
+		const auto offset = piece.GetPos() + pos;
 
 		DrawMatrix( mat,offset,
 			{ piece.GetDim(),piece.GetDim() } );
@@ -204,5 +207,5 @@ private:
 	static constexpr int size = Tetreon::size;
 	Arena arena;
 	std::map<int,bool> keys;
-	Timer downTimer = { 0.06f };
+	Timer downTimer = { 0.067f };
 };

@@ -46,6 +46,7 @@ public:
 	{
 		const auto& matVec = piece.GetMat();
 		const int dimension = piece.GetDim();
+
 		// TODO: Make this less ugly.
 		if( matVec.size() == 3 * 3 )
 		{

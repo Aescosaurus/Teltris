@@ -33,62 +33,46 @@ public:
 	}
 	void Sweep()
 	{
-		for( int y = height - 1; y > 0; --y )
+		for( int i = 0; i < 2; ++i )
 		{
-			bool willReplace = true;
-			for( int x = 0; x < width; ++x )
+			for( int y = height - 1; y > 0; --y )
 			{
-				if( data[y * width + x] == 0 )
+				bool willReplace = true;
+				for( int x = 0; x < width; ++x )
 				{
-					willReplace = false;
-					continue;
+					if( data[y * width + x] == 0 )
+					{
+						willReplace = false;
+						continue;
+					}
 				}
-			}
 
-			if( willReplace )
-			{
-				ShiftDown( y );
+				if( willReplace )
+				{
+					ShiftDown( y );
+				}
 			}
 		}
 	}
 	void ShiftDown( int whichLine )
 	{
-		// for( int i = 0; i < width * height; ++i )
-		// {
-		// 	const auto spot = i - width;
-		// 	if( spot < 0 ) data[i] = 0;
-		// 	else data[i] = data[spot];
-		// }
 
-		// for( int y = 0; y < height; ++y )
-		// {
-		// 	for( int x = 0; x < width; ++x )
-		// 	{
-		// 		const auto place = y * width + x;
-		// 		const auto spot = ( y - 1 ) * width + x;
-		// 
-		// 		if( spot >= 0 ) data[place] = data[spot];
-		// 		else data[place] = 0;
-		// 	}
-		// }
-
-		std::vector<uint> temp;
-		for( int i = 0; i < int( data.size() ); ++i )
+		// If you go top to bottom (like I did like 100
+		//  times before realizing it won't work) it will
+		//  it will set a line to 0, and the line below to
+		//  the one above (all 0), and so on.
+		for( int i = width * height - 1; i >= 0; --i )
 		{
-			if( i > ( height - whichLine ) * width + 0 )
+			const auto spot = i - width;
+			if( spot >= 0 )
 			{
-				temp.emplace_back( data[i] );
-			}
-			else if( i - width < 0 )
-			{
-				temp.emplace_back( 0 );
+				data[i] = data[spot];
 			}
 			else
 			{
-				temp.emplace_back( data[i - width] );
+				data[i] = 0;
 			}
 		}
-		data = temp;
 	}
 	const std::vector<uint>& GetMat() const
 	{
