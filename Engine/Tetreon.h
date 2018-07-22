@@ -5,14 +5,20 @@
 
 class Tetreon
 {
+public:
+	enum class Type
+	{
+		T,O,L,J,I,S,Z
+	};
 private:
 	typedef unsigned int uint;
 public:
 	Tetreon( const std::vector<uint>& data,
-		const Vei2& pos )
+		const Vei2& pos,Type t )
 		:
 		pos( pos ),
-		dim( ( data.size() == 3 * 3 ) ? 3 : 4 )
+		dim( ( data.size() == 3 * 3 ) ? 3 : 4 ),
+		myType( t )
 	{
 		assert( data.size() == 3 * 3 ||
 			data.size() == 4 * 4 );
@@ -22,10 +28,10 @@ public:
 			matrix.emplace_back( data[i] );
 		}
 	}
-	Tetreon( const std::vector<uint>& data )
-		:
-		Tetreon( data,Vei2( 0,0 ) )
-	{}
+	// Tetreon( const std::vector<uint>& data )
+	// 	:
+	// 	Tetreon( data,Vei2( 0,0 ) )
+	// {}
 	const std::vector<uint>& GetMat() const
 	{
 		return( matrix );
@@ -90,7 +96,8 @@ public:
 				}
 			}
 
-			const Tetreon temp{ newData,piece.GetPos() };
+			const Tetreon temp{ newData,
+				piece.GetPos(),piece.GetType() };
 			return( temp );
 		}
 		else
@@ -134,17 +141,18 @@ public:
 				}
 			}
 
-			const Tetreon temp{ newData,piece.GetPos() };
+			const Tetreon temp{ newData,
+				piece.GetPos(),piece.GetType() };
 			return( temp );
 		}
 	}
 	static Tetreon T( const Vei2& pos = Vei2( 0,0 ) )
 	{
 		return( Tetreon( {
-			0,0,0,
+			0,1,0,
 			1,1,1,
-			0,1,0
-			},pos ) );
+			0,0,0
+			},pos,Type::T ) );
 	}
 	static Tetreon O( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -152,7 +160,7 @@ public:
 			2,2,0,
 			2,2,0,
 			0,0,0
-			},pos ) );
+			},pos,Type::O ) );
 	}
 	static Tetreon L( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -160,7 +168,7 @@ public:
 			0,3,0,
 			0,3,0,
 			0,3,3
-			},pos ) );
+			},pos,Type::L ) );
 	}
 	static Tetreon J( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -168,7 +176,7 @@ public:
 			0,4,0,
 			0,4,0,
 			4,4,0
-			},pos ) );
+			},pos,Type::J ) );
 	}
 	static Tetreon I( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -177,7 +185,7 @@ public:
 			0,5,0,0,
 			0,5,0,0,
 			0,5,0,0
-			},pos ) );
+			},pos,Type::I ) );
 	}
 	static Tetreon S( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -185,7 +193,7 @@ public:
 			0,6,6,
 			6,6,0,
 			0,0,0
-			},pos ) );
+			},pos,Type::S ) );
 	}
 	static Tetreon Z( const Vei2& pos = Vei2( 0,0 ) )
 	{
@@ -193,11 +201,15 @@ public:
 			7,7,0,
 			0,7,7,
 			0,0,0
-			},pos ) );
+			},pos,Type::Z ) );
 	}
 	int GetDim() const
 	{
 		return( dim );
+	}
+	Type GetType() const
+	{
+		return( myType );
 	}
 public:
 	static constexpr int dimS = 3;
@@ -215,6 +227,7 @@ public:
 		Colors::MakeRGB( 247u,32u,57u ) // Salmon.
 	};
 private:
+	/*const */Type myType;
 	std::vector<uint> matrix;
 	/*const */int dim;
 	// uint matrix[][];

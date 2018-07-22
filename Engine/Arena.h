@@ -9,6 +9,12 @@ class Arena
 private:
 	typedef unsigned int uint;
 public:
+	void Draw( const Vei2& offset,Graphics& gfx ) const
+	{
+		gfx.DrawRect( offset.x,offset.y,
+			width * Tetreon::size,height * Tetreon::size,
+			Colors::Gray );
+	}
 	void Merge( const Tetreon& piece )
 	{
 		const auto& mat = piece.GetMat();
@@ -56,7 +62,6 @@ public:
 	}
 	void ShiftDown( int whichLine )
 	{
-
 		// If you go top to bottom (like I did like 100
 		//  times before realizing it won't work) it will
 		//  it will set a line to 0, and the line below to
@@ -81,7 +86,7 @@ public:
 	bool Collide( const Tetreon& player ) const
 	{
 		const auto& mat = player.GetMat();
-		const auto& pos = player.GetPos() / Tetreon::size;
+		auto pos = player.GetPos() / Tetreon::size;
 
 		for( int y = 0; y < player.GetDim(); ++y )
 		{
@@ -92,7 +97,9 @@ public:
 				const auto amount = y * player.GetDim() + x;
 
 				// Man this should be a little cleaner huh bud?
-				if( amount > 0 &&
+				//  Anyway, this error messed me up for
+				//  a LONG time.  amount > 0 WON'T WORK!!
+				if( amount >= 0 &&
 					amount < int( mat.size() ) &&
 					mat[amount] != 0 &&
 					( ( y + pos.y >= height ||

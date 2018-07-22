@@ -78,6 +78,7 @@ public:
 	void Draw( Graphics& gfx ) const
 	{
 		const Vei2 start = Vei2( 150,50 );
+		arena.Draw( start,gfx );
 		DrawMatrix( arena.GetMat(),
 			start,Arena::dim );
 		DrawPiece( piece,start );
@@ -129,10 +130,16 @@ public:
 	}
 	void MovePlayer( int amount )
 	{
-		piece.GetPos().x += amount * size;
+		Vei2& pos = piece.GetPos();
+		// const auto spot = ( pos.x + amount * size ) / size;
+		// if( spot < 0 || spot > Arena::width )
+		// {
+		// 	return;
+		// }
+		pos.x += amount * size;
 		if( arena.Collide( piece ) )
 		{
-			piece.GetPos().x -= amount * size;
+			pos.x -= amount * size;
 		}
 	}
 	void RotatePlayer( int dir )
