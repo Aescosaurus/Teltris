@@ -23,6 +23,7 @@ public:
 		keys.insert( { VK_DOWN,false } );
 		keys.insert( { VK_UP,false } );
 		keys.insert( { int( 'C' ),false } );
+		keys.insert( { VK_SPACE,false } );
 
 		for( int i = 0; i < nNextPieces; ++i )
 		{
@@ -75,12 +76,22 @@ public:
 			SwapStored();
 			keys[int( 'C' )] = true;
 		}
+		else if( kbd.KeyIsPressed( VK_SPACE ) &&
+			!keys[VK_SPACE] )
+		{
+			// This is kinda cool, I think it works but
+			//  will run 1 too many times.  That's ok.
+			while( !Drop() );
+			dropTimer.Reset();
+			downTimer.Reset();
+		}
 
 		keys[VK_UP] = kbd.KeyIsPressed( VK_UP );
 		keys[VK_DOWN] = kbd.KeyIsPressed( VK_DOWN );
 		keys[VK_LEFT] = kbd.KeyIsPressed( VK_LEFT );
 		keys[VK_RIGHT] = kbd.KeyIsPressed( VK_RIGHT );
 		keys[int( 'C' )] = kbd.KeyIsPressed( int( 'C' ) );
+		keys[VK_SPACE] = kbd.KeyIsPressed( VK_SPACE );
 
 		dropTimer.Update( dt );
 		if( dropTimer.IsDone() )
@@ -149,7 +160,7 @@ public:
 			}
 		}
 	}
-	void Drop()
+	bool Drop()
 	{
 		dropTimer.Reset();
 		piece.GetPos().y += size;
@@ -161,7 +172,9 @@ public:
 			arena.Merge( piece );
 			ResetPlayer();
 			arena.Sweep();
+			return( true );
 		}
+		else return( false );
 	}
 	void MovePlayer( int amount )
 	{

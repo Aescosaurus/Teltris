@@ -12,6 +12,7 @@ public:
 	void Draw( const Vei2& offset,Graphics& gfx ) const
 	{
 		static constexpr int nHidden = 2;
+
 		gfx.DrawRect( offset.x,
 			offset.y + nHidden * Tetreon::size,
 			width * Tetreon::size,
