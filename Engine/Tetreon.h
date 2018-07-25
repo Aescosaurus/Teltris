@@ -2,17 +2,23 @@
 
 #include <vector>
 #include <cassert>
+#include "Random.h"
 
 class Tetreon
 {
 public:
 	enum class Type
 	{
-		T,O,L,J,I,S,Z
+		Fake,T,O,L,J,I,S,Z
 	};
 private:
 	typedef unsigned int uint;
 public:
+	Tetreon()
+		:
+		Tetreon( { 1,1,1,1,1,1,1,1,1 },
+			{ 0,0 },Type::Fake )
+	{}
 	Tetreon( const std::vector<uint>& data,
 		const Vei2& pos,Type t )
 		:
@@ -47,6 +53,24 @@ public:
 	Vei2& GetPos()
 	{
 		return( pos );
+	}
+	static Tetreon GetRandPiece()
+	{
+		const int rnd = Random::RangeI( 0,6 );
+		switch( rnd )
+		{
+		case 0: return( Tetreon::T() ); break;
+		case 1: return( Tetreon::O() ); break;
+		case 2: return( Tetreon::L() ); break;
+		case 3: return( Tetreon::J() ); break;
+		case 4: return( Tetreon::I() ); break;
+		case 5: return( Tetreon::S() ); break;
+		case 6: return( Tetreon::Z() ); break;
+		default: // You will never get this.
+			assert( false );
+			return( Tetreon() );
+			break;
+		}
 	}
 	static Tetreon Rotate( const Tetreon& piece,int dir )
 	{
@@ -145,6 +169,14 @@ public:
 				piece.GetPos(),piece.GetType() };
 			return( temp );
 		}
+	}
+	static Tetreon Blank()
+	{
+		return( Tetreon( {
+			0,0,0,
+			0,0,0,
+			0,0,0
+			},Vei2( 0,0 ),Type::Fake ) );
 	}
 	static Tetreon T( const Vei2& pos = Vei2( 0,0 ) )
 	{

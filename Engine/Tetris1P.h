@@ -22,6 +22,12 @@ public:
 		keys.insert( { VK_RIGHT,false } );
 		keys.insert( { VK_DOWN,false } );
 		keys.insert( { VK_UP,false } );
+		keys.insert( { int( 'C' ),false } );
+
+		for( int i = 0; i < nNextPieces; ++i )
+		{
+			nextPieces[i] = Tetreon::GetRandPiece();
+		}
 
 		ResetPlayer();
 	}
@@ -63,11 +69,18 @@ public:
 			RotatePlayer( 1 );
 			keys[VK_UP] = true;
 		}
+		else if( kbd.KeyIsPressed( int( 'C' ) ) &&
+			!keys[int( 'C' )] )
+		{
+			SwapStored();
+			keys[int( 'C' )] = true;
+		}
 
 		keys[VK_UP] = kbd.KeyIsPressed( VK_UP );
 		keys[VK_DOWN] = kbd.KeyIsPressed( VK_DOWN );
 		keys[VK_LEFT] = kbd.KeyIsPressed( VK_LEFT );
 		keys[VK_RIGHT] = kbd.KeyIsPressed( VK_RIGHT );
+		keys[int( 'C' )] = kbd.KeyIsPressed( int( 'C' ) );
 
 		dropTimer.Update( dt );
 		if( dropTimer.IsDone() )
@@ -77,18 +90,40 @@ public:
 	}
 	void Draw( Graphics& gfx ) const
 	{
-		const Vei2 start = Vei2( 150,50 );
+		static constexpr Vei2 start = Vei2( 150,50 );
+		static constexpr Vei2 storedStart = start +
+			Vei2{ Arena::width * size,0 } + Vei2( 5 );
+		static constexpr Vei2 nextPieceAdd = Vei2( 0,5 );
+
 		arena.Draw( start,gfx );
+
 		DrawMatrix( arena.GetMat(),
 			start,Arena::dim );
+
 		DrawPiece( piece,start );
-		// DrawMatrix( piece.GetMat(),piece.GetPos() );
+
+		DrawMatrix( storedPiece.GetMat(),
+			storedStart,storedPiece.GetDim() );
+
+		// for( const auto& t : nextPieces )
+		for( int i = 0; i < nNextPieces; ++i )
+		{
+			const auto& next = nextPieces[i];
+			// Use ( i + 1 ) instead of i to make room
+			//  for stored piece.
+			const auto myPos = storedStart +
+				nextPieceAdd * ( i + 1 ) +
+				Vei2( 0,Tetreon::dimL * size * ( i + 1 ) );
+			
+			DrawMatrix( next.GetMat(),myPos,
+				next.GetDim() );
+		}
 	}
 	void DrawPiece( const Tetreon& piece,
 		const Vei2& pos ) const
 	{
-		const auto mat = piece.GetMat();
-		const auto offset = piece.GetPos() + pos;
+		const auto& mat = piece.GetMat();
+		const auto& offset = piece.GetPos() + pos;
 
 		DrawMatrix( mat,offset,
 			{ piece.GetDim(),piece.GetDim() } );
@@ -163,21 +198,15 @@ public:
 	}
 	void ResetPlayer()
 	{
-		const int rnd = Random::RangeI( 0,6 );
-		switch( rnd )
-		{
-		case 0: piece = Tetreon::T(); break;
-		case 1: piece = Tetreon::O(); break;
-		case 2: piece = Tetreon::L(); break;
-		case 3: piece = Tetreon::J(); break;
-		case 4: piece = Tetreon::I(); break;
-		case 5: piece = Tetreon::S(); break;
-		case 6: piece = Tetreon::Z(); break;
-		default:
-			assert( false );
-			break;
-		}
+		// piece = Tetreon::GetRandPiece();
+		piece = nextPieces[0];
+		ShiftNextPieces();
+		nextPieces[nNextPieces - 1] = Tetreon::GetRandPiece();
 
+		ResetPlayerPos();
+	}
+	void ResetPlayerPos()
+	{
 		piece.GetPos().x = Arena::width / 2 * size;
 		piece.GetPos().y = 0;
 
@@ -187,6 +216,17 @@ public:
 		{
 			arena.Clear();
 			ResetPlayer();
+		}
+	}
+	void ShiftNextPieces()
+	{
+		// for( int i = nNextPieces - 2; i >= 0; --i )
+		// {
+		// 	nextPieces[i] = nextPieces[i + 1];
+		// }
+		for( int i = 0; i < nNextPieces - 1; ++i )
+		{
+			nextPieces[i] = nextPieces[i + 1];
 		}
 	}
 	bool CheckForCollision( const Vei2& offset,bool merge )
@@ -207,6 +247,19 @@ public:
 			return( false );
 		}
 	}
+	void SwapStored()
+	{
+		if( storedPiece.GetType() != Tetreon::Type::Fake )
+		{
+			std::swap( piece,storedPiece );
+			ResetPlayerPos(); // Doesn't change piece!
+		}
+		else
+		{
+			storedPiece = piece;
+			ResetPlayer(); // Changes piece!
+		}
+	}
 private:
 	Graphics& gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
@@ -215,4 +268,7 @@ private:
 	Arena arena;
 	std::map<int,bool> keys;
 	Timer downTimer = { 0.067f };
+	Tetreon storedPiece = Tetreon::Blank();
+	static constexpr int nNextPieces = 3;
+	Tetreon nextPieces[nNextPieces];
 };

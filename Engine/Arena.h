@@ -11,8 +11,11 @@ private:
 public:
 	void Draw( const Vei2& offset,Graphics& gfx ) const
 	{
-		gfx.DrawRect( offset.x,offset.y,
-			width * Tetreon::size,height * Tetreon::size,
+		static constexpr int nHidden = 2;
+		gfx.DrawRect( offset.x,
+			offset.y + nHidden * Tetreon::size,
+			width * Tetreon::size,
+			( height - nHidden ) * Tetreon::size,
 			Colors::Gray );
 	}
 	void Merge( const Tetreon& piece )
@@ -39,7 +42,7 @@ public:
 	}
 	void Sweep()
 	{
-		for( int i = 0; i < 2; ++i )
+		// for( int i = 0; i < 3; ++i )
 		{
 			for( int y = height - 1; y > 0; --y )
 			{
@@ -56,6 +59,7 @@ public:
 				if( willReplace )
 				{
 					ShiftDown( y );
+					y = height;
 				}
 			}
 		}
@@ -128,7 +132,7 @@ private:
 	}
 public:
 	static constexpr int width = 10;
-	static constexpr int height = 20;
+	static constexpr int height = 22;
 	static constexpr Vei2 dim = { width,height };
 private:
 	std::vector<uint> data = CreateMatrix( width,height );
