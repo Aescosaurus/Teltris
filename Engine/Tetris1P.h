@@ -8,6 +8,9 @@
 #include "Arena.h"
 #include <map>
 #include "Random.h"
+#include <vector>
+#include "Surface.h"
+#include "SpriteEffect.h"
 
 class Tetris1P
 {
@@ -31,6 +34,20 @@ public:
 		}
 
 		ResetPlayer();
+
+		const Surface base = "Images/Tetreons.bmp";
+		pieceIcons.emplace_back( Surface( base,
+			RectI( { 8 * 3,8 * 1 },8,8 ) )
+			.GetExpanded( size,size ) );
+		for( int y = 0; y < 2; ++y )
+		{
+			for( int x = 0; x < 4; ++x )
+			{
+				pieceIcons.emplace_back( Surface( base,
+					RectI( { 8 * x,8 * y },8,8 ) )
+					.GetExpanded( size,size ) );
+			}
+		}
 	}
 	void Update( const float dt,const Keyboard& kbd )
 	{
@@ -103,7 +120,7 @@ public:
 	{
 		static constexpr Vei2 start = Vei2( 150,50 );
 		static constexpr Vei2 storedStart = start +
-			Vei2{ Arena::width * size,0 } + Vei2( 5 );
+			Vei2{ Arena::width * size,0 } +Vei2( 5 );
 		static constexpr Vei2 nextPieceAdd = Vei2( 0,5 );
 
 		arena.Draw( start,gfx );
@@ -125,7 +142,7 @@ public:
 			const auto myPos = storedStart +
 				nextPieceAdd * ( i + 1 ) +
 				Vei2( 0,Tetreon::dimL * size * ( i + 1 ) );
-			
+
 			DrawMatrix( next.GetMat(),myPos,
 				next.GetDim() );
 		}
@@ -152,10 +169,14 @@ public:
 					mat[spot] != 0 )
 				{
 					// TODO: Replace with images someday.
-					gfx.DrawRect( size * x + offset.x,
+					// gfx.DrawRect( size * x + offset.x,
+					// 	size * y + offset.y,
+					// 	size,size,
+					// 	Tetreon::tetCols[mat[spot]] );
+					gfx.DrawSprite( size * x + offset.x,
 						size * y + offset.y,
-						size,size,
-						Tetreon::tetCols[mat[spot]] );
+						pieceIcons[mat[spot]],
+						SpriteEffect::Copy{} );
 				}
 			}
 		}
@@ -164,7 +185,7 @@ public:
 	{
 		dropTimer.Reset();
 		piece.GetPos().y += size;
-		
+
 		// CheckForCollision( { 0,-1 },true );
 		if( arena.Collide( piece ) )
 		{
@@ -274,7 +295,7 @@ public:
 		}
 	}
 private:
-	Graphics& gfx;
+	Graphics & gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
 	Timer dropTimer = { 1.0f };
 	static constexpr int size = Tetreon::size;
@@ -284,4 +305,5 @@ private:
 	Tetreon storedPiece = Tetreon::Blank();
 	static constexpr int nNextPieces = 3;
 	Tetreon nextPieces[nNextPieces];
+	std::vector<Surface> pieceIcons;
 };

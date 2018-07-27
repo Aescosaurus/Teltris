@@ -246,7 +246,7 @@ public:
 public:
 	static constexpr int dimS = 3;
 	static constexpr int dimL = 4;
-	static constexpr int size = 20;
+	static constexpr int size = 24;
 	static constexpr Color tetCols[] =
 	{
 		Colors::MakeRGB( 255u,0u,255u ), // pls no
