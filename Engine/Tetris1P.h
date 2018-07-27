@@ -11,16 +11,25 @@
 #include <vector>
 #include "Surface.h"
 #include "SpriteEffect.h"
+#include <algorithm>
 
 class Tetris1P
 {
 private:
 	typedef unsigned int uint;
 public:
-	Tetris1P( Graphics& gfx )
+	Tetris1P( uint seed,Graphics& gfx )
 		:
-		gfx( gfx )
+		gfx( gfx ),
+		rngEng( seed )
 	{
+		bag.reserve( bagSize );
+		for( int i = 0; i < bagSize; ++i )
+		{
+			bag.emplace_back( Tetreon::Type::Fake );
+		}
+		RandomizeBag();
+
 		keys.insert( { VK_LEFT,false } );
 		keys.insert( { VK_RIGHT,false } );
 		keys.insert( { VK_DOWN,false } );
@@ -30,7 +39,8 @@ public:
 
 		for( int i = 0; i < nNextPieces; ++i )
 		{
-			nextPieces[i] = Tetreon::GetRandPiece();
+			// nextPieces[i] = Tetreon::GetRandPiece();
+			nextPieces[i] = Tetreon::GetPiece( GetNextBagItem() );
 		}
 
 		ResetPlayer();
@@ -235,7 +245,8 @@ public:
 		// piece = Tetreon::GetRandPiece();
 		piece = nextPieces[0];
 		ShiftNextPieces();
-		nextPieces[nNextPieces - 1] = Tetreon::GetRandPiece();
+		// nextPieces[nNextPieces - 1] = Tetreon::GetRandPiece();
+		nextPieces[nNextPieces - 1] = Tetreon::GetPiece( GetNextBagItem() );
 
 		ResetPlayerPos();
 	}
@@ -294,8 +305,32 @@ public:
 			ResetPlayer(); // Changes piece!
 		}
 	}
+	void RandomizeBag()
+	{
+		// Wow this is gross but I always mess up for loops.
+		bag[0] = Tetreon::Type::T;
+		bag[1] = Tetreon::Type::O;
+		bag[2] = Tetreon::Type::L;
+		bag[3] = Tetreon::Type::J;
+		bag[4] = Tetreon::Type::I;
+		bag[5] = Tetreon::Type::S;
+		bag[6] = Tetreon::Type::Z;
+		std::shuffle( bag.begin(),bag.end(),rngEng );
+	}
+	Tetreon::Type GetNextBagItem()
+	{
+		auto temp = bag[curBagSpot];
+		bag[curBagSpot] = Tetreon::Type::Fake;
+		++curBagSpot;
+		if( curBagSpot >= bagSize )
+		{
+			curBagSpot = 0;
+			RandomizeBag();
+		}
+		return( temp );
+	}
 private:
-	Graphics & gfx;
+	Graphics& gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
 	Timer dropTimer = { 1.0f };
 	static constexpr int size = Tetreon::size;
@@ -306,4 +341,8 @@ private:
 	static constexpr int nNextPieces = 3;
 	Tetreon nextPieces[nNextPieces];
 	std::vector<Surface> pieceIcons;
+	static constexpr int bagSize = Tetreon::nPieceTypes;
+	std::vector<Tetreon::Type> bag;
+	int curBagSpot = 0;
+	std::mt19937 rngEng;
 };

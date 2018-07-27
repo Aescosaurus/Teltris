@@ -54,23 +54,27 @@ public:
 	{
 		return( pos );
 	}
-	static Tetreon GetRandPiece()
+	static Tetreon GetPiece( Type pieceType )
 	{
-		const int rnd = Random::RangeI( 0,6 );
-		switch( rnd )
+		switch( int( pieceType ) )
 		{
-		case 0: return( Tetreon::T() ); break;
-		case 1: return( Tetreon::O() ); break;
-		case 2: return( Tetreon::L() ); break;
-		case 3: return( Tetreon::J() ); break;
-		case 4: return( Tetreon::I() ); break;
-		case 5: return( Tetreon::S() ); break;
-		case 6: return( Tetreon::Z() ); break;
+		case 1: return( Tetreon::T() ); break;
+		case 2: return( Tetreon::O() ); break;
+		case 3: return( Tetreon::L() ); break;
+		case 4: return( Tetreon::J() ); break;
+		case 5: return( Tetreon::I() ); break;
+		case 6: return( Tetreon::S() ); break;
+		case 7: return( Tetreon::Z() ); break;
 		default: // You will never get this.
 			assert( false );
 			return( Tetreon() );
 			break;
 		}
+	}
+	static Tetreon GetRandPiece()
+	{
+		const int rnd = Random::RangeI( 1,7 );
+		return( GetPiece( Type( rnd ) ) );
 	}
 	static Tetreon Rotate( const Tetreon& piece,int dir )
 	{
@@ -244,6 +248,7 @@ public:
 		return( myType );
 	}
 public:
+	static constexpr int nPieceTypes = 7;
 	static constexpr int dimS = 3;
 	static constexpr int dimL = 4;
 	static constexpr int size = 24;

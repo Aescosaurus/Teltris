@@ -108,7 +108,8 @@ public:
 					amount < int( mat.size() ) &&
 					mat[amount] != 0 &&
 					( ( y + pos.y >= height ||
-					( dataPos < int( data.size() ) &&
+					( dataPos >= 0 &&
+					dataPos < int( data.size() ) &&
 					data[dataPos] != 0 ) ) ||
 					( x + pos.x >= width ||
 					x + pos.x < 0 ) ) )

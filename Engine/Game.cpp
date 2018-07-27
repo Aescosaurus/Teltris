@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	singleplayer( gfx )
+	singleplayer( Random::RangeI( 0,100 ),gfx )
 {
 }
 
