@@ -26,7 +26,15 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	singleplayer( Random::RangeI( 0,100 ),gfx )
+	singleplayer( Random::RangeI( 0,100 ),{ 50,50 },
+		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
+		VK_SPACE,int( 'C' ) },gfx ),
+	player1( Random::RangeI( 0,100 ),{ 50,50 },
+		{ int( 'A' ),int( 'D' ),int( 'W' ),int( 'S' ),
+		VK_SPACE,int( 'C' ) },gfx ),
+	player2( Random::RangeI( 0,100 ),{ 450,50 },
+		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
+		VK_BACK,int( 'P' ) },gfx )
 {
 }
 
@@ -41,10 +49,45 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float dt = FrameTimer::Mark();
-	singleplayer.Update( dt,wnd.kbd );
+	
+	switch( gameState )
+	{
+	case State::Menu:
+		start1P.Update( wnd.mouse );
+		start2P.Update( wnd.mouse );
+		if( start1P.IsPressed() )
+		{
+			gameState = State::Tetris1P;
+		}
+		else if( start2P.IsPressed() )
+		{
+			gameState = State::Tetris2P;
+		}
+		break;
+	case State::Tetris1P:
+		singleplayer.Update( dt,wnd.kbd );
+		break;
+	case State::Tetris2P:
+		player1.Update( dt,wnd.kbd );
+		player2.Update( dt,wnd.kbd );
+		break;
+	}
 }
 
 void Game::ComposeFrame()
 {
-	singleplayer.Draw( gfx );
+	switch( gameState )
+	{
+	case State::Menu:
+		start1P.Draw( gfx );
+		start2P.Draw( gfx );
+		break;
+	case State::Tetris1P:
+		singleplayer.Draw( gfx );
+		break;
+	case State::Tetris2P:
+		player1.Draw( gfx );
+		player2.Draw( gfx );
+		break;
+	}
 }

@@ -24,6 +24,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Tetris1P.h"
+#include "Button.h"
 
 class Game
 {
@@ -43,6 +44,23 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	enum class State
+	{
+		Menu,
+		Tetris1P,
+		Tetris2P,
+		TetrisVsBot
+	};
+	Font fixedSys = "Fonts/FixedSys16x28.bmp";
+	Button start1P = Button( { 50,50 },
+		"Play Alone",fixedSys );
+	Button start2P = Button( { 50,100 },
+		"Play Together",fixedSys );
+
+	State gameState = State::Menu;
+
 	Tetris1P singleplayer;
+	Tetris1P player1;
+	Tetris1P player2;
 	/********************************/
 };

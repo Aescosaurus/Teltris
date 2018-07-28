@@ -2,12 +2,24 @@
 #include <algorithm>
 #include "SpriteEffect.h"
 #include "Random.h"
+#include <cassert>
 
-Tetris1P::Tetris1P( uint seed,Graphics& gfx )
+Tetris1P::Tetris1P( uint seed,const Vei2& drawPos,
+	const std::vector<int>& controls,
+	Graphics& gfx )
 	:
 	gfx( gfx ),
-	rngEng( seed )
+	rngEng( seed ),
+	start( drawPos ),
+	left( controls[0] ),
+	right( controls[1] ),
+	rotate( controls[2] ),
+	down( controls[3] ),
+	fDown( controls[4] ),
+	store( controls[5] )
 {
+	assert( controls.size() == 6 );
+
 	bag.reserve( bagSize );
 	for( int i = 0; i < bagSize; ++i )
 	{
@@ -15,12 +27,12 @@ Tetris1P::Tetris1P( uint seed,Graphics& gfx )
 	}
 	RandomizeBag();
 
-	keys.insert( { VK_LEFT,false } );
-	keys.insert( { VK_RIGHT,false } );
-	keys.insert( { VK_DOWN,false } );
-	keys.insert( { VK_UP,false } );
-	keys.insert( { int( 'C' ),false } );
-	keys.insert( { VK_SPACE,false } );
+	keys.insert( { left,false } );
+	keys.insert( { right,false } );
+	keys.insert( { down,false } );
+	keys.insert( { rotate,false } );
+	keys.insert( { store,false } );
+	keys.insert( { fDown,false } );
 
 	for( int i = 0; i < nNextPieces; ++i )
 	{
@@ -47,7 +59,7 @@ Tetris1P::Tetris1P( uint seed,Graphics& gfx )
 
 void Tetris1P::Update( const float dt,const Keyboard& kbd )
 {
-	if( kbd.KeyIsPressed( VK_DOWN ) )
+	if( kbd.KeyIsPressed( down ) )
 	{
 		downTimer.Update( dt );
 	}
@@ -56,41 +68,41 @@ void Tetris1P::Update( const float dt,const Keyboard& kbd )
 		downTimer.Reset();
 	}
 	// 
-	if( kbd.KeyIsPressed( VK_LEFT ) && !keys[VK_LEFT] )
+	if( kbd.KeyIsPressed( left ) && !keys[left] )
 	{
-		keys[VK_LEFT] = true;
+		keys[left] = true;
 		// piece.GetPos().x -= size;
 		// CheckForCollision( { 1,0 },false );
 		MovePlayer( -1 );
 	}
-	else if( kbd.KeyIsPressed( VK_RIGHT ) && !keys[VK_RIGHT] )
+	else if( kbd.KeyIsPressed( right ) && !keys[right] )
 	{
-		keys[VK_RIGHT] = true;
+		keys[right] = true;
 		// piece.GetPos().x += size;
 		// CheckForCollision( { -1,0 },false );
 		MovePlayer( 1 );
 	}
-	else if( kbd.KeyIsPressed( VK_DOWN ) &&
-		( !keys[VK_DOWN] || downTimer.IsDone() ) )
+	else if( kbd.KeyIsPressed( down ) &&
+		( !keys[down] || downTimer.IsDone() ) )
 	{
 		downTimer.Reset();
 		Drop();
 		dropTimer.Reset();
-		keys[VK_DOWN] = true;
+		keys[down] = true;
 	}
-	else if( kbd.KeyIsPressed( VK_UP ) && !keys[VK_UP] )
+	else if( kbd.KeyIsPressed( rotate ) && !keys[rotate] )
 	{
 		RotatePlayer( 1 );
-		keys[VK_UP] = true;
+		keys[rotate] = true;
 	}
-	else if( kbd.KeyIsPressed( int( 'C' ) ) &&
-		!keys[int( 'C' )] )
+	else if( kbd.KeyIsPressed( store ) &&
+		!keys[store] )
 	{
 		SwapStored();
-		keys[int( 'C' )] = true;
+		keys[store] = true;
 	}
-	else if( kbd.KeyIsPressed( VK_SPACE ) &&
-		!keys[VK_SPACE] )
+	else if( kbd.KeyIsPressed( fDown ) &&
+		!keys[fDown] )
 	{
 		// This is kinda cool, I think it works but
 		//  will run 1 too many times.  That's ok.
@@ -99,12 +111,12 @@ void Tetris1P::Update( const float dt,const Keyboard& kbd )
 		downTimer.Reset();
 	}
 
-	keys[VK_UP] = kbd.KeyIsPressed( VK_UP );
-	keys[VK_DOWN] = kbd.KeyIsPressed( VK_DOWN );
-	keys[VK_LEFT] = kbd.KeyIsPressed( VK_LEFT );
-	keys[VK_RIGHT] = kbd.KeyIsPressed( VK_RIGHT );
-	keys[int( 'C' )] = kbd.KeyIsPressed( int( 'C' ) );
-	keys[VK_SPACE] = kbd.KeyIsPressed( VK_SPACE );
+	keys[rotate] = kbd.KeyIsPressed( rotate );
+	keys[down] = kbd.KeyIsPressed( down );
+	keys[left] = kbd.KeyIsPressed( left );
+	keys[right] = kbd.KeyIsPressed( right );
+	keys[store] = kbd.KeyIsPressed( store );
+	keys[fDown] = kbd.KeyIsPressed( fDown );
 
 	dropTimer.Update( dt );
 	if( dropTimer.IsDone() )
@@ -115,8 +127,8 @@ void Tetris1P::Update( const float dt,const Keyboard& kbd )
 
 void Tetris1P::Draw( Graphics& gfx ) const
 {
-	static constexpr Vei2 start = Vei2( 150,50 );
-	static constexpr Vei2 storedStart = start +
+	// const Vei2 start = Vei2( 150,50 );
+	const Vei2 storedStart = start +
 		Vei2{ Arena::width * size,0 } +Vei2( 5 );
 	static constexpr Vei2 nextPieceAdd = Vei2( 0,5 );
 

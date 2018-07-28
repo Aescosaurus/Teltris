@@ -17,7 +17,10 @@ class Tetris1P
 private:
 	typedef unsigned int uint;
 public:
-	Tetris1P( uint seed,Graphics& gfx );
+	// Controls: left, right, rotate, drop, full drop, store.
+	Tetris1P( uint seed,const Vei2& drawPos,
+		const std::vector<int>& controls,
+		Graphics& gfx );
 
 	void Update( const float dt,const Keyboard& kbd );
 	void Draw( Graphics& gfx ) const;
@@ -46,17 +49,29 @@ private:
 	Arena arena;
 	std::map<int,bool> keys;
 	Timer downTimer = { 0.067f };
+
 	Tetreon storedPiece = Tetreon::Blank();
 	static constexpr int nNextPieces = 3;
 	Tetreon nextPieces[nNextPieces];
 	std::vector<Surface> pieceIcons;
+
 	static constexpr int bagSize = Tetreon::nPieceTypes;
 	std::vector<Tetreon::Type> bag;
 	int curBagSpot = 0;
 	std::mt19937 rngEng;
+
 	Tetreon ghostPiece = Tetreon::Blank();
 	const Surface ghostIcon = Surface( "Images/GhostTile.bmp" )
 		.GetExpanded( size,size );
+
 	int curLevel = 0;
 	int score = 0;
+
+	const Vei2 start;
+	const int left;
+	const int right;
+	const int rotate;
+	const int down;
+	const int fDown;
+	const int store;
 };
