@@ -3,6 +3,8 @@
 #include <vector>
 #include "Tetreon.h"
 #include "Graphics.h"
+#include "Surface.h"
+#include "SpriteEffect.h"
 
 class Arena
 {
@@ -12,12 +14,27 @@ public:
 	void Draw( const Vei2& offset,Graphics& gfx ) const
 	{
 		static constexpr int nHidden = 2;
+		const int xX = offset.x;
+		const int yY = offset.y + nHidden * Tetreon::size;
+		const int wW = width * Tetreon::size;
+		const int hH = ( height - nHidden ) * Tetreon::size;
+		
+		gfx.DrawRect( xX,yY,wW,hH,Colors::Gray );
 
-		gfx.DrawRect( offset.x,
-			offset.y + nHidden * Tetreon::size,
-			width * Tetreon::size,
-			( height - nHidden ) * Tetreon::size,
-			Colors::Gray );
+		// for( int y = 0; y < height; ++y )
+		// {
+		// 	for( int x = 0; x < width; ++x )
+		// 	{
+		// 		const auto xPos = ( x * size ) + offset.x;
+		// 		const auto yPos = ( y * size ) + offset.y;
+		// 		// gfx.DrawRect( xPos,
+		// 		// 	yPos,
+		// 		// 	size,size,
+		// 		// 	Colors::Gray );
+		// 		gfx.DrawSprite( xPos,yPos,gridTile,
+		// 			SpriteEffect::Copy{} );
+		// 	}
+		// }
 	}
 	void Merge( const Tetreon& piece )
 	{
@@ -138,4 +155,7 @@ public:
 	static constexpr Vei2 dim = { width,height };
 private:
 	std::vector<uint> data = CreateMatrix( width,height );
+	// static constexpr int size = Tetreon::size;
+	// const Surface gridTile = Surface( "Images/GridTile.bmp" )
+	// 	.GetExpanded( size,size );
 };

@@ -42,6 +42,10 @@ public:
 	{
 		return( matrix );
 	}
+	std::vector<uint>& GetMat()
+	{
+		return( matrix );
+	}
 	const Vei2& GetPos() const
 	{
 		return( pos );

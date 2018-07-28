@@ -139,6 +139,7 @@ public:
 			start,Arena::dim );
 
 		DrawPiece( piece,start );
+		DrawGhostPiece( start );
 
 		DrawMatrix( storedPiece.GetMat(),
 			storedStart,storedPiece.GetDim() );
@@ -165,6 +166,33 @@ public:
 
 		DrawMatrix( mat,offset,
 			{ piece.GetDim(),piece.GetDim() } );
+	}
+	void DrawGhostPiece( const Vei2& offset ) const
+	{
+		const auto& mat = ghostPiece.GetMat();
+		const auto dim = Vei2( ghostPiece.GetDim() );
+
+		const auto xAdd = offset.x + ghostPiece.GetPos().x;
+		const auto yAdd = offset.y + ghostPiece.GetPos().y;
+		for( int y = 0; y < dim.y; ++y )
+		{
+			for( int x = 0; x < dim.x; ++x )
+			{
+				const auto spot = y * dim.x + x;
+				if( spot < int( mat.size() ) &&
+					spot >= 0 &&
+					mat[spot] != 0 )
+				{
+					const auto xPos = size * x + xAdd;
+					const auto yPos = size * y + yAdd;
+
+					gfx.DrawSprite( xPos,yPos,
+						ghostIcon,
+						SpriteEffect
+						::Chroma{ Colors::Magenta } );
+				}
+			}
+		}
 	}
 	void DrawMatrix( const std::vector<uint>& mat,
 		const Vei2& offset,const Vei2& dim ) const
@@ -203,9 +231,30 @@ public:
 			arena.Merge( piece );
 			ResetPlayer();
 			arena.Sweep();
+			UpdateGhost();
 			return( true );
 		}
-		else return( false );
+		else
+		{
+			UpdateGhost();
+			return( false );
+		}
+	}
+	void UpdateGhost()
+	{
+		ghostPiece = piece;
+
+		bool done = false;
+		while( !done )
+		{
+			ghostPiece.GetPos().y += size;
+		
+			if( arena.Collide( ghostPiece ) )
+			{
+				ghostPiece.GetPos().y -= size;
+				done = true;
+			}
+		}
 	}
 	void MovePlayer( int amount )
 	{
@@ -220,6 +269,8 @@ public:
 		{
 			pos.x -= amount * size;
 		}
+
+		UpdateGhost();
 	}
 	void RotatePlayer( int dir )
 	{
@@ -239,6 +290,8 @@ public:
 				break;
 			}
 		}
+
+		UpdateGhost();
 	}
 	void ResetPlayer()
 	{
@@ -345,4 +398,7 @@ private:
 	std::vector<Tetreon::Type> bag;
 	int curBagSpot = 0;
 	std::mt19937 rngEng;
+	Tetreon ghostPiece = Tetreon::Blank();
+	const Surface ghostIcon = Surface( "Images/GhostTile.bmp" )
+		.GetExpanded( size,size );
 };
