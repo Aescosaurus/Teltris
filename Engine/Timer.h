@@ -15,11 +15,15 @@ public:
 	{
 		curTime = 0.0f;
 	}
+	void ChangeMax( float amount )
+	{
+		maxTime += amount;
+	}
 	bool IsDone() const
 	{
 		return( curTime >= maxTime );
 	}
 private:
-	const float maxTime;
+	float maxTime;
 	float curTime = 0.0f;
 };

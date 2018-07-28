@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include "Random.h"
+#include "Vec2.h"
 
 class Tetreon
 {

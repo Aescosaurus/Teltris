@@ -58,8 +58,9 @@ public:
 	{
 		data = CreateMatrix( width,height );
 	}
-	void Sweep()
+	int Sweep( int level )
 	{
+		int nLinesCleared = 0;
 		// for( int i = 0; i < 3; ++i )
 		{
 			for( int y = height - 1; y > 0; --y )
@@ -78,9 +79,24 @@ public:
 				{
 					ShiftDown( y );
 					y = height;
+					++nLinesCleared;
 				}
 			}
 		}
+
+		// Do stuff with nLinesCleared.
+		switch( nLinesCleared )
+		{
+		case 0: return( 0 ); break;
+		case 1: return( 40 * ( level + 1 ) ); break;
+		case 2: return( 100 * ( level + 1 ) ); break;
+		case 3: return( 300 * ( level + 1 ) ); break;
+		case 4: return( 1200 * ( level + 1 ) ); break;
+		default:
+			assert( false );
+			break;
+		}
+		return( 0 );
 	}
 	void ShiftDown( int whichLine )
 	{
