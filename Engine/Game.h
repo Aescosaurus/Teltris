@@ -62,5 +62,7 @@ private:
 	Tetris1P singleplayer;
 	Tetris1P player1;
 	Tetris1P player2;
+
+	int seed;
 	/********************************/
 };

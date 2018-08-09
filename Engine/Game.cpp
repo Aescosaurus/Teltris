@@ -26,13 +26,14 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	singleplayer( Random::RangeI( 0,100 ),{ 50,50 },
+	seed( Random::RangeI( 0,100 ) ),
+	singleplayer( seed,{ 50,50 },
 		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
 		VK_SPACE,int( 'C' ) },gfx ),
-	player1( Random::RangeI( 0,100 ),{ 50,50 },
+	player1( seed,{ 50,50 },
 		{ int( 'A' ),int( 'D' ),int( 'W' ),int( 'S' ),
 		VK_SPACE,int( 'C' ) },gfx ),
-	player2( Random::RangeI( 0,100 ),{ 450,50 },
+	player2( seed,{ 450,50 },
 		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
 		VK_BACK,int( 'P' ) },gfx )
 {

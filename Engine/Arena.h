@@ -93,9 +93,11 @@ public:
 		case 3: return( 300 * ( level + 1 ) ); break;
 		case 4: return( 1200 * ( level + 1 ) ); break;
 		default:
+			// You will never get this.
 			assert( false );
 			break;
 		}
+		// You *should* never get this either.
 		return( 0 );
 	}
 	void ShiftDown( int whichLine )
