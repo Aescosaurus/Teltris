@@ -74,4 +74,7 @@ private:
 	const int down;
 	const int fDown;
 	const int store;
+
+	bool waitedToDrop = false;
+	bool canManuallyDrop = false;
 };

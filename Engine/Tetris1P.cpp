@@ -83,10 +83,14 @@ void Tetris1P::Update( const float dt,const Keyboard& kbd )
 		MovePlayer( 1 );
 	}
 	else if( kbd.KeyIsPressed( down ) &&
+		canManuallyDrop &&
 		( !keys[down] || downTimer.IsDone() ) )
 	{
 		downTimer.Reset();
-		Drop();
+		if( Drop() )
+		{
+			canManuallyDrop = false;
+		}
 		dropTimer.Reset();
 		keys[down] = true;
 	}
@@ -227,19 +231,33 @@ bool Tetris1P::Drop()
 	dropTimer.Reset();
 	piece.GetPos().y += size;
 
+	canManuallyDrop = true;
+
 	// CheckForCollision( { 0,-1 },true );
 	if( arena.Collide( piece ) )
 	{
-		piece.GetPos().y -= size;
-		arena.Merge( piece );
-		ResetPlayer();
-		score += arena.Sweep( curLevel );
-		// UpdateGhost();
-		return( true );
+		if( waitedToDrop )
+		{
+			waitedToDrop = false;
+
+			piece.GetPos().y -= size;
+			arena.Merge( piece );
+			ResetPlayer();
+			score += arena.Sweep( curLevel );
+			// UpdateGhost();
+			return( true );
+		}
+		else
+		{
+			waitedToDrop = true;
+			piece.GetPos().y -= size;
+			return( true );
+		}
 	}
 	else
 	{
 		// UpdateGhost();
+		waitedToDrop = false;
 		return( false );
 	}
 }
@@ -276,6 +294,8 @@ void Tetris1P::MovePlayer( int amount )
 	}
 
 	UpdateGhost();
+
+	canManuallyDrop = true;
 }
 
 void Tetris1P::RotatePlayer( int dir )
@@ -298,16 +318,21 @@ void Tetris1P::RotatePlayer( int dir )
 	}
 
 	UpdateGhost();
+
+	canManuallyDrop = true;
 }
 
 void Tetris1P::ResetPlayer()
-{// piece = Tetreon::GetRandPiece();
+{
+	// piece = Tetreon::GetRandPiece();
 	piece = nextPieces[0];
 	ShiftNextPieces();
 	// nextPieces[nNextPieces - 1] = Tetreon::GetRandPiece();
 	nextPieces[nNextPieces - 1] = Tetreon::GetPiece( GetNextBagItem() );
 
 	ResetPlayerPos();
+
+	canManuallyDrop = true;
 }
 
 void Tetris1P::ResetPlayerPos()
