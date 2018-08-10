@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "Tetris1P.h"
 #include "Button.h"
+#include "HighScoreManager.h"
 
 class Game
 {
@@ -64,5 +65,7 @@ private:
 	Tetris1P player2;
 
 	int seed;
+
+	HighScoreManager hsm;
 	/********************************/
 };

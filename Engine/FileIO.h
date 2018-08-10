@@ -38,8 +38,14 @@ public:
 			assert( "FileIO doesn't exist!" && in.good() );
 		}
 
-		std::ofstream out{ fileName };
+		std::ofstream out{ fileName,std::ofstream::app };
 		out << addition;
+	}
+	static void Empty( const std::string& fileName )
+	{
+		std::ofstream out;
+		out.open( fileName,
+			std::ofstream::out | std::ofstream::trunc );
 	}
 	static bool Exists( const std::string& fileName )
 	{

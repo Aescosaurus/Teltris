@@ -14,91 +14,95 @@ public:
 		if( !FileIO::Exists( file ) )
 		{
 			FileIO::Create( file );
-			for( int i = 0; i < nMaxScores; ++i )
-			{
-				FileIO::Append( file,"NONAM: 0\n" );
-			}
+			// for( int i = 0; i < nMaxScores; ++i )
+			// {
+			// 	FileIO::Append( file,"NONAM: 0\n" );
+			// }
+			RewriteFile( { 0,0,0,0,0,0,0,0,0,0 },
+				{ "NONAM","NONAM","NONAM","NONAM","NONAM",
+				"NONAM","NONAM","NONAM","NONAM","NONAM" } );
 		}
 	}
-	void UpdateScoreboard( int newScore,
-		std::string name )
+	void AddScore( int newScore,std::string name )
 	{
-		while( name.length < 5 ) name += '_';
-		for( char& c : name )
-		{
-			if( c == ' ' ) c = '_';
-		}
-		assert( name.length == 5 );
+		// Name needs to be 5 characters!!!
+		while( name.length() < 5 ) name += '_';
+		assert( name.length() == 5 );
 
-		const auto numAsStr = std::to_string( newScore );
+		auto scores = GetScores();
+		auto names = GetNames();
 
-		std::string rawData = FileIO::Read( scoreFilePath );
-		const auto scores = GetScores();
+		assert( names.size() == scores.size() );
+
 		for( int i = 0; i < int( scores.size() ); ++i )
 		{
 			if( newScore > scores[i] )
 			{
-				// Should be i - 1, but i starts at 0.
-				const int targetLine = i;
-				// Because 1st line is 1, not 0;
-				int curLine = 1;
-
-				for( int j = 0; j < rawData.length(); ++j )
+				// Shift everything down.
+				for( int j = int( scores.size() - 1 );
+					j > i; --j )
 				{
-					if( rawData[j] == '\n' )
-					{
-						++curLine;
+					if( j - 1 < 0 ) continue;
 
-						// Replace name and score.
-						if( curLine == targetLine )
-						{
-							bool atEndOfLine = false;
-							// k starts at 1 to skip prev newline.
-							int k = 1;
-							while( !atEndOfLine )
-							{
-								assert( k <= 5 + 1 + 1 );
-								if( rawData[j + k] == ':' )
-								{
-									atEndOfLine = true;
-								}
-
-								rawData[j + k] = name[k - 1];
-
-								++k;
-							}
-							bool keepGoing = false;
-							int l = 0;
-							while( keepGoing )
-							{
-								rawData[j + k + l] = numAsStr[l];
-
-								if( rawData[j + k + l] == '\n' )
-								{
-									for( int m = l;
-										m < numAsStr.length();
-										++m )
-									{
-										rawData.insert( rawData.begin() + j + k + l,numAsStr[m] );
-									}
-									keepGoing = false;
-								}
-
-								++l;
-							}
-						}
-					}
+					scores[j] = scores[j - 1];
+					names[j] = names[j - 1];
 				}
+
+				scores[i] = newScore;
+				names[i] = name;
+
+				break;
 			}
 		}
+
+		RewriteFile( scores,names );
 	}
-	std::vector<int> GetScores()
+	// These are highest to lowest I think.
+	std::vector<std::string> GetNames() const
+	{
+		auto data = FileIO::Read( scoreFilePath );
+
+		std::vector<std::string> names;
+
+		for( int i = 0; i < int( data.length() ); ++i )
+		{
+			std::string tempName = "";
+			bool gotValidName = false;
+
+			if( i + 5 <= int( data.length() ) &&
+				data[i + 5] == ':' &&
+				data[i + 5 + 1] == ' ' )
+			{
+				bool finishedName = false;
+				int j = 0;
+				while( !finishedName )
+				{
+					const auto info = data[i + 0 + j];
+
+					if( info == ':' ) finishedName = true;
+					else tempName += info;
+
+					++j;
+				}
+
+				gotValidName = true;
+			}
+
+			if( gotValidName )
+			{
+				names.emplace_back( tempName );
+			}
+		}
+		
+		return( names );
+	}
+	std::vector<int> GetScores() const
 	{
 		auto data = FileIO::Read( scoreFilePath );
 
 		std::vector<int> nums;
 
-		for( int i = 0; i < data.length(); ++i )
+		for( int i = 0; i < int( data.length() ); ++i )
 		{
 			std::string tempNum = "";
 			bool gotValidNum = false;
@@ -129,6 +133,24 @@ public:
 		return( nums );
 	}
 private:
+	void RewriteFile( const std::vector<int>& nums,
+		const std::vector<std::string>& names )
+	{
+		assert( nums.size() == names.size() );
+
+		FileIO::Empty( scoreFilePath );
+		
+		for( int i = 0; i < int( nums.size() ); ++i )
+		{
+			std::string text = "";
+			text += names[i];
+			text += ": ";
+			text += std::to_string( nums[i] );
+			text += "\n";
+			FileIO::Append( scoreFilePath,text );
+		}
+	}
+private:
 	static constexpr int nMaxScores = 10;
-	const std::string scoreFilePath = "HighScores.scr";
+	const std::string scoreFilePath = "_HighScores.txt";
 };

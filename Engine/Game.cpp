@@ -37,6 +37,7 @@ Game::Game( MainWindow& wnd )
 		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
 		VK_BACK,int( 'P' ) },gfx )
 {
+	// hsm.AddScore( 35,"BOP2" );
 }
 
 void Game::Go()
