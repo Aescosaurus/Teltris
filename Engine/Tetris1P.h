@@ -12,6 +12,12 @@
 #include "Tetreon.h"
 #include "Arena.h"
 
+#include "Font.h"
+#include "Button.h"
+#include "Mouse.h"
+#include "ScoreSubmitter.h"
+#include "HighScoreManager.h"
+
 class Tetris1P
 {
 private:
@@ -23,14 +29,20 @@ public:
 		Graphics& gfx );
 
 	void Update( const float dt,const Keyboard& kbd );
+	bool UpdateEnd( Keyboard& kbd,const Mouse& ms,
+		HighScoreManager& hsm );
 	void Draw( Graphics& gfx ) const;
+	void DrawScore( const Vei2& drawPos,
+		const Font& f,Graphics& gfx ) const;
 
+	void Reset();
+private:
 	void DrawPiece( const Tetreon& piece,
 		const Vei2& pos ) const;
 	void DrawGhostPiece( const Vei2& offset ) const;
 	void DrawMatrix( const std::vector<uint>& mat,
 		const Vei2& offset,const Vei2& dim ) const;
-
+private:
 	bool Drop();
 	void UpdateGhost();
 	void MovePlayer( int amount );
@@ -42,6 +54,7 @@ public:
 	void RandomizeBag();
 	Tetreon::Type GetNextBagItem();
 private:
+	const Font fixedSys = "Fonts/FixedSys16x28.bmp";
 	Graphics& gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
 	Timer dropTimer = { 1.0f };
@@ -77,4 +90,7 @@ private:
 
 	bool waitedToDrop = false;
 	bool canManuallyDrop = false;
+
+	bool gameOver = false;
+	ScoreSubmitter endScore;
 };

@@ -39,6 +39,7 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void ResetAll();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -50,13 +51,22 @@ private:
 		Menu,
 		Tetris1P,
 		Tetris2P,
-		TetrisVsBot
+		TetrisVsBot,
+		ViewingHighScores
 	};
 	Font fixedSys = "Fonts/FixedSys16x28.bmp";
+	Button backToMenu = Button( { 10,10 },
+		"Menu",fixedSys );
 	Button start1P = Button( { 50,50 },
 		"Play Alone",fixedSys );
 	Button start2P = Button( { 50,100 },
 		"Play Together",fixedSys );
+	Button startVsAI = Button( { 50,150 },
+		"Play vs Robots",fixedSys );
+	Button highScores = Button( { 50,200 },
+		"View High Scores",fixedSys );
+	Button quitGame = Button( { 50,250 },
+		"Quit",fixedSys );
 
 	State gameState = State::Menu;
 

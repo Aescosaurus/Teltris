@@ -59,6 +59,8 @@ Tetris1P::Tetris1P( uint seed,const Vei2& drawPos,
 
 void Tetris1P::Update( const float dt,const Keyboard& kbd )
 {
+	if( gameOver ) return;
+
 	if( kbd.KeyIsPressed( down ) )
 	{
 		downTimer.Update( dt );
@@ -129,6 +131,22 @@ void Tetris1P::Update( const float dt,const Keyboard& kbd )
 	}
 }
 
+bool Tetris1P::UpdateEnd( Keyboard& kbd,const Mouse& ms,
+	HighScoreManager& hsm )
+{
+	if( gameOver )
+	{
+		endScore.Update( kbd,ms );
+
+		if( endScore.IsDone() )
+		{
+			hsm.AddScore( score,endScore.GetName() );
+			return( true );
+		}
+	}
+	return( false );
+}
+
 void Tetris1P::Draw( Graphics& gfx ) const
 {
 	// const Vei2 start = Vei2( 150,50 );
@@ -160,6 +178,30 @@ void Tetris1P::Draw( Graphics& gfx ) const
 		DrawMatrix( next.GetMat(),myPos,
 			next.GetDim() );
 	}
+
+	if( gameOver )
+	{
+		endScore.Draw( gfx );
+	}
+}
+
+void Tetris1P::DrawScore( const Vei2& drawPos,
+	const Font& f,Graphics& gfx ) const
+{
+	f.DrawText( "Score: " + std::to_string( score ),
+		drawPos,Colors::White,gfx );
+}
+
+void Tetris1P::Reset()
+{
+	ResetPlayer();
+	RandomizeBag();
+	storedPiece = Tetreon::Blank();
+	curLevel = 0;
+	score = 0;
+	gameOver = false;
+	endScore = ScoreSubmitter{};
+	arena.Clear();
 }
 
 void Tetris1P::DrawPiece( const Tetreon& piece,
@@ -342,10 +384,12 @@ void Tetris1P::ResetPlayerPos()
 
 	dropTimer.Reset();
 
+	// End game if true.
 	if( arena.Collide( piece ) )
 	{
-		arena.Clear();
-		ResetPlayer();
+		// arena.Clear();
+		// ResetPlayer();
+		gameOver = true;
 	}
 
 	UpdateGhost();
@@ -387,7 +431,15 @@ void Tetris1P::RandomizeBag()
 	bag[4] = Tetreon::Type::I;
 	bag[5] = Tetreon::Type::S;
 	bag[6] = Tetreon::Type::Z;
-	std::shuffle( bag.begin(),bag.end(),rngEng );
+	// std::shuffle( bag.begin(),bag.end(),rngEng );
+
+	// Using my own shuffle func cuz the std one is bad.
+	const int nShuffles = 10;
+	for( int i = 0; i < nShuffles; ++i )
+	{
+		std::swap( bag[Random::RangeI( 0,6 )],
+			bag[Random::RangeI( 0,6 )] );
+	}
 }
 
 Tetreon::Type Tetris1P::GetNextBagItem()

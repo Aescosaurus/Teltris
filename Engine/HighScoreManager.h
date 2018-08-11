@@ -18,9 +18,14 @@ public:
 			// {
 			// 	FileIO::Append( file,"NONAM: 0\n" );
 			// }
-			RewriteFile( { 0,0,0,0,0,0,0,0,0,0 },
-				{ "NONAM","NONAM","NONAM","NONAM","NONAM",
-				"NONAM","NONAM","NONAM","NONAM","NONAM" } );
+			std::vector<int> scores;
+			std::vector<std::string> names;
+			for( int i = 0; i < nMaxScores; ++i )
+			{
+				scores.emplace_back( 0 );
+				names.emplace_back( "NONAM" );
+			}
+			RewriteFile( scores,names );
 		}
 	}
 	void AddScore( int newScore,std::string name )
@@ -151,6 +156,6 @@ private:
 		}
 	}
 private:
-	static constexpr int nMaxScores = 10;
+	static constexpr int nMaxScores = 9;
 	const std::string scoreFilePath = "_HighScores.txt";
 };

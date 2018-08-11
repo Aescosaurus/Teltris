@@ -84,6 +84,7 @@ public:
 			}
 		}
 
+		if( nLinesCleared > 4 ) nLinesCleared = 2;
 		// Do stuff with nLinesCleared.
 		switch( nLinesCleared )
 		{

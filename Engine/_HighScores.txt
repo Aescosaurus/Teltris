@@ -1,10 +1,9 @@
-BOP__: 35
-BOP__: 35
-BOP2_: 35
-NONAM: 0
-NONAM: 0
-NONAM: 0
-NONAM: 0
+best_: 1200
+blep_: 340
+Test_: 300
+blopo: 180
+Test: 100
+soup_: 40
 NONAM: 0
 NONAM: 0
 NONAM: 0
