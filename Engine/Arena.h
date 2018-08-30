@@ -99,6 +99,7 @@ public:
 			break;
 		}
 		// You *should* never get this either.
+		assert( false );
 		return( 0 );
 	}
 	void ShiftDown( int whichLine )
@@ -107,6 +108,7 @@ public:
 		//  times before realizing it won't work) it will
 		//  it will set a line to 0, and the line below to
 		//  the one above (all 0), and so on.
+		/*
 		for( int i = width * height - 1; i >= 0; --i )
 		{
 			const auto spot = i - width;
@@ -117,6 +119,26 @@ public:
 			else
 			{
 				data[i] = 0;
+			}
+		}
+		*/
+		for( int y = whichLine; y >= 0; --y )
+		{
+			for( int x = 0; x < width; ++x )
+			{
+				if( y == 0 )
+				{
+					const int spot = x;
+					data[spot] = 0u;
+				}
+				else
+				{
+					const int spot = y * width + x;
+					const int spot2 = ( y - 1 ) *
+						width + x;
+
+					data[spot] = data[spot2];
+				}
 			}
 		}
 	}

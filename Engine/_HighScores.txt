@@ -1,9 +1,9 @@
-best_: 1200
-blep_: 340
-Test_: 300
-blopo: 180
-Test: 100
-soup_: 40
+Aesc_: 7200
+NONAM: 0
+NONAM: 0
+NONAM: 0
+NONAM: 0
+NONAM: 0
 NONAM: 0
 NONAM: 0
 NONAM: 0

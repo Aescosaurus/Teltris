@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	seed( 23 ),
+	seed( 24 ),
 	singleplayer( seed,{ 50,50 },
 		{ VK_LEFT,VK_RIGHT,VK_UP,VK_DOWN,
 		VK_SPACE,int( 'C' ) },gfx ),

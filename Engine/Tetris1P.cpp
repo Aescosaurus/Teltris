@@ -4,7 +4,8 @@
 #include "Random.h"
 #include <cassert>
 
-Tetris1P::Tetris1P( uint seed,const Vei2& drawPos,
+Tetris1P::Tetris1P( uint seed,
+	const Vei2& drawPos,
 	const std::vector<int>& controls,
 	Graphics& gfx )
 	:
