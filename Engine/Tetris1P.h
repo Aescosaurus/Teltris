@@ -57,7 +57,10 @@ private:
 	const Font fixedSys = "Fonts/FixedSys16x28.bmp";
 	Graphics& gfx;
 	Tetreon piece = Tetreon::T( Vei2( 0,0 ) );
-	Timer dropTimer = { 1.0f };
+	static constexpr float origDropTime = 1.0f;
+	Timer dropTimer = { origDropTime };
+	// dropTimeChange needs tweaking to be perfect.
+	static constexpr float dropTimeChange = 0.04f;
 	static constexpr int size = Tetreon::size;
 	Arena arena;
 	std::map<int,bool> keys;

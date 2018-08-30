@@ -84,7 +84,15 @@ public:
 			}
 		}
 
-		if( nLinesCleared > 4 ) nLinesCleared = 2;
+		if( nLinesCleared > 4 )
+		{
+			assert( false );
+			nLinesCleared = 2;
+		}
+		if( nLinesCleared != 0 )
+		{
+			++nTetrises;
+		}
 		// Do stuff with nLinesCleared.
 		switch( nLinesCleared )
 		{
@@ -179,6 +187,10 @@ public:
 		}
 		return( false );
 	}
+	int GetTetrises() const
+	{
+		return( nTetrises );
+	}
 private:
 	std::vector<uint> CreateMatrix( int w,int h ) const
 	{
@@ -196,6 +208,9 @@ public:
 	static constexpr Vei2 dim = { width,height };
 private:
 	std::vector<uint> data = CreateMatrix( width,height );
+	// Represents number of times a line is cleared, but
+	//  a 1/2/3/4 line clear counts as the same.
+	int nTetrises = 0;
 	// static constexpr int size = Tetreon::size;
 	// const Surface gridTile = Surface( "Images/GridTile.bmp" )
 	// 	.GetExpanded( size,size );

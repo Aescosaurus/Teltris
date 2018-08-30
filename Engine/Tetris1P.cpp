@@ -287,6 +287,8 @@ bool Tetris1P::Drop()
 			arena.Merge( piece );
 			ResetPlayer();
 			score += arena.Sweep( curLevel );
+			dropTimer = std::max( 0.01f,origDropTime -
+				arena.GetTetrises() * dropTimeChange );
 			// UpdateGhost();
 			return( true );
 		}
